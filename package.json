@@ -14,7 +14,7 @@
     "generate": "ts-node ./generators/index.ts",
     "lint": "eslint 'src/**/*.{js,ts,tsx}'",
     "lint:fix": "eslint --fix 'src/**/*.{js,ts,tsx}'",
-    "prepublish": "npm run clean && tsc && cp -rp src/gen dist/gen",
+    "prepublishOnly": "npm run clean && tsc && cp -rp src/gen dist/gen",
     "prettier": "prettier --check 'src/**/*.{js,ts,tsx}'",
     "prettier:format": "prettier --write 'src/**/*.{js,ts,tsx}'",
     "typecheck": "tsc --noEmit"
