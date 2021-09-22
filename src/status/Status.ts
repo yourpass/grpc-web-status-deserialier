@@ -9,7 +9,7 @@ interface DeserializeBinaryInterface {
 function isDeserializeBinaryInterface(
   data: unknown
 ): data is DeserializeBinaryInterface {
-  if (typeof data !== "object") {
+  if (typeof data !== "function" && typeof data !== "object") {
     return false;
   }
 
@@ -17,10 +17,10 @@ function isDeserializeBinaryInterface(
     return false;
   }
 
-  // Widen obj type
-  const wideObject: { deserializeBinary?: unknown } = data;
+  // Widen obj type to allow querying property type
+  const widenedObject: { deserializeBinary?: unknown } = data;
 
-  return typeof wideObject.deserializeBinary === "function";
+  return typeof widenedObject.deserializeBinary === "function";
 }
 
 function isUnknownMap(data: unknown): data is { [key: string]: unknown } {
@@ -130,10 +130,6 @@ export default class Status {
             throw new Error(
               "Failed to determine the final class from ErrorDetails"
             );
-          }
-
-          if (!isDeserializeBinaryInterface(classList)) {
-            throw new Error("Could not determine the error detail type");
           }
 
           // Deserialize the class and add it to details
