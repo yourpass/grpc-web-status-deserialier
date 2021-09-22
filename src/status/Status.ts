@@ -13,7 +13,7 @@ function isDeserializeBinaryInterface(
     return false;
   }
 
-  if (data === null){
+  if (data === null) {
     return false;
   }
 
@@ -23,8 +23,11 @@ function isDeserializeBinaryInterface(
   return typeof wideObject.deserializeBinary === "function";
 }
 
-function isMapOfUknown(data: unknown, path: string): data is {[key: string]: unknown} {
-  if (typeof data !== 'object') {
+function isMapOfUknown(
+  data: unknown,
+  path: string
+): data is { [key: string]: unknown } {
+  if (typeof data !== "object") {
     return false;
   }
 
@@ -66,26 +69,34 @@ export default class Status {
       errDetail.getDetailsList().forEach((item) => {
         const fqn = item.getTypeName().replace(/^google\.rpc\./, "");
         const fqPath = fqn.split(".");
-        let finalClass: {[key:string]: unknown} = ErrorDetails;
-        do {
-          const path = fqPath.shift();
-          if (!path) {
-            throw new Error(
-              "One of the error detail fully qualified names is empty"
-            );
+        let finalClass: { [key: string]: unknown } = ErrorDetails;
+        try {
+          do {
+            const path = fqPath.shift();
+            if (!path) {
+              throw new Error(
+                "One of the error detail fully qualified names is empty"
+              );
+            }
+
+            if (isMapOfUknown(finalClass, path)) {
+              throw new Error(
+                "One of the error detail fully qualified name was not found"
+              );
+            }
+
+            finalClass = finalClass[path];
+          } while (fqPath.length > 0);
+
+          if (!isDeserializeBinaryInterface(finalClass)) {
+            throw new Error("Could not determine the error detail type");
           }
+        } catch (e) {
+          const debugInfo = new ErrorDetails.DebugInfo();
+          debugInfo.setDetail(`Frontend error: Failure to decode error detail ${fqn}: ${e}`);
 
-          if (isMapOfUknown(finalClass, path)) {
-            throw new Error(
-              "One of the error detail fully qualified name was not found"
-            );
-          }
-
-          finalClass = finalClass[path];
-        } while (fqPath.length > 0);
-
-        if (!isDeserializeBinaryInterface(finalClass)) {
-          throw new Error("Could not determine the error detail type");
+          this.detailsList.push(debugInfo);
+          return;
         }
 
         this.detailsList.push(
