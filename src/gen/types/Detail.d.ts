@@ -1,5 +1,5 @@
 
-import * as ErrorDetails from "../googleapis/google/rpc/error_details_pb";
+import * as ErrorDetails from "./googleapis/google/rpc/error_details_pb";
 
 export type Detail =
     | ErrorDetails.BadRequest

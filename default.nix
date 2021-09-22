@@ -48,6 +48,7 @@ let
 
   protogen_path_js = "src/gen/googleapis/google/rpc";
   types_path_js = "src/gen/types";
+  index_path_js = "src/index.ts";
 
   buf-gen-config = {
     version = "v1";
@@ -114,7 +115,7 @@ in
         command = ''
           clean
           buf generate --template '${builtins.toJSON buf-gen-config}' ./googleapis/google/rpc
-          npm run generate -- --types-path "${types_path_js}" --proto-path "${protogen_path_js}"
+          npm run generate -- --types-path "${types_path_js}" --index-path "${index_path_js}" --proto-path "${protogen_path_js}"
         '';
       }
       {
@@ -123,6 +124,7 @@ in
         command = ''
           rm -rf "$DEVSHELL_ROOT/${protogen_path_js}"
           rm -rf "$DEVSHELL_ROOT/${types_path_js}"
+          rm -f "$DEVSHELL_ROOT/${index_path_js}"
         '';
       }
     ];

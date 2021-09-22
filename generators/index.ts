@@ -1,5 +1,6 @@
 import * as path from 'path';
 import generateDetail from './generateDetail';
+import generateIndex from './generateIndex';
 
 const typesArgIndex = process.argv.indexOf('--types-path');
 
@@ -18,6 +19,26 @@ if (process.argv[typesArgIndex].indexOf('=') > 0) {
 
 if (!typesPath) {
     console.error("Invalid types path specified");
+    process.exit(137);
+}
+
+const indexArgIndex = process.argv.indexOf('--index-path');
+
+if (indexArgIndex < 0) {
+    console.error("You must provide --index-path argument to specify where index are generated");
+    process.exit(1);
+}
+
+let indexPath: string;
+
+if (process.argv[indexArgIndex].indexOf('=') > 0) {
+    indexPath = process.argv[indexArgIndex].replace(/--index-path=/, '');
+} else {
+    indexPath = process.argv[indexArgIndex+1];
+}
+
+if (!indexPath) {
+    console.error("Invalid index path specified");
     process.exit(137);
 }
 
@@ -42,3 +63,4 @@ if (!protoPath) {
 }
 
 generateDetail(path.resolve(typesPath), path.resolve(protoPath));
+generateIndex(path.resolve(indexPath), path.resolve(protoPath));
